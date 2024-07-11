@@ -1,0 +1,93 @@
+body {
+    background-color: rgb(241, 236, 236);
+    margin: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Establece el cuerpo al menos al 100% del alto de la ventana */
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: hsl(174, 72%, 56%);
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 10vh;
+    width: 100%;
+}
+
+header img {
+    height: 80%;
+    width: 10%;
+    display: flex;
+    margin-left: 5%;
+    border-radius: 3px;
+}
+
+.banner {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%; /* Ajusta el ancho máximo del banner */
+    overflow: hidden; /* Oculta el contenido que se desborda */
+    flex-shrink: 0;
+    
+    
+}
+
+.Banner_img {
+
+    width: 100%; /* Ajusta el ancho de la imagen al 100% del contenedor */
+    height: 25vh; /* Ajusta la altura automáticamente para mantener la proporción */
+    max-width: 100%; /* Ajusta el ancho máximo de la imagen */
+    width: 80%;
+
+}
+#formcenter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.titulo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+
+.footer {
+    background-color: hsl(174, 72%, 56%);
+    color: hsl(0, 0%, 100%);
+    margin-top: auto;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center; /* Centra el contenido horizontalmente */
+    overflow: hidden;
+    align-items: end;
+
+    /*background-color: hsl(174, 72%, 56%);
+    color: hsl(0, 0%, 100%);
+    margin-top: auto;
+    flex-direction: row;
+    width: 100%;*/
+}
+
+
+
