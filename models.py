@@ -24,6 +24,7 @@ class Usuario(Base):
     Telefono = Column(String(50), nullable=False)
     Imagen = Column(String(255), nullable=False)
     Habilitado = Column(Boolean(255), nullable=False)
+    Contrasena = Column(String(255), nullable=False)
     Estado = Column(String(255), nullable=False)
 
     rol = relationship("Rol", back_populates="usuarios")

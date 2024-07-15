@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link href="{{url_for('static', path='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback')}}" rel="stylesheet">
+      <link href="{{url_for('static', path='/fontawesome-free/css/all.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('static', path='/icheck-bootstrap/icheck-bootstrap.min.css')}}" rel="stylesheet">
+      <link href="{{url_for('static', path='/adminlte.min.css')}}" rel="stylesheet">
+
+    <title>Home</title>   
+</head>
+<body>
+
+    <header>
+        <img  src="/static/img/Logo.png" alt="Logo">
+            <nav>
+                <a>Tarjeton electoral</a>
+                <a>Resultado elecciones</a> 
+                <a>Perfil</a>
+            </nav>
+            
+    </header>
+                
+            
+    <div class="banner">
+        <img class="Banner_img" src="/static/img/Banner1.jpg" alt="Banner_1"> 
+    </div>
+
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>
