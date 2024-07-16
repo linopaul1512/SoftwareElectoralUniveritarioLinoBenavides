@@ -56,40 +56,62 @@ def get_db():
         db.close()
 
 
+#Codigo de imagen de producto
 
-@app.post("/usuario/create/", response_model=schemas.User)
-async def crear_usuario(request: Request, 
+UPLOAD_DIR = "static/images/"
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+
+
+def save_upload_file(upload_file: UploadFile, upload_dir: str):
+    filename, file_extension = os.path.splitext(upload_file.filename)
+    unique_filename = f"{filename}_{uuid.uuid4().hex}{file_extension}"
+    file_path = os.path.join(upload_dir, unique_filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(upload_file.file, buffer)
+
+    return file_path
+
+
+@app.post("/usuario/create/", response_model=schemas.UserBase)
+async def crear_usuario_post(request: Request, 
                         CI: str = Form(...), 
                         Nombres: str = Form(...), 
                         Apellidos: str = Form(...), 
+                        Estado_vzla: str = Form(...),
                         Correo_electronico: str = Form(...), 
                         Direccion_hab: str = Form(...), 
                         Direccion_electoral: str = Form(...), 
                         Fecha_nacimiento: str = Form(...), 
                         Telefono : str = Form(...),
-                        Imagen : str = Form(...),
-                        Habilitado : str = Form(...),
+                        Imagen: UploadFile = File(...),
                         Contrasena : str = Form(...),
-                        Estado : str = Form(...),
                         db: Session = Depends(get_db)):
+  
+    imagenpath = save_upload_file(Imagen, UPLOAD_DIR)
+
     print("Usuario: ", Correo_electronico)
     user = schemas.UserCreate(CI=CI, 
+                              IdRole="2",
                               Nombres=Nombres, 
                               Apellidos=Apellidos, 
+                              Estado_vzla = Estado_vzla,
                               Correo_electronico=Correo_electronico, 
                               Direccion_hab=Direccion_hab,
                               Direccion_electoral=Direccion_electoral, 
                               Fecha_nacimiento=Fecha_nacimiento,
                               Telefono=Telefono,
-                              Imagen=Imagen,
-                              Habilitado=Habilitado,
+                              Imagen=imagenpath,
+                              Habilitado="Si",
                               Contrasena=Contrasena,
-                              Estado=Estado)
+                              Estado="Activo"
+                              )
     db_user = crudUsuario.get_user_by_email(db, email=user.Correo_electronico)
     print("Db user: ", db_user)
     if db_user: 
         raise HTTPException(status_code=400, detail="Email already registered")
-    db_user = crudUsuario.get_user_by_ci(db, user_id=user.cedula_identidad)
+    db_user = crudUsuario.get_user_by_ci(db, user_id=user.CI)
     if db_user: 
         raise HTTPException(status_code=400, detail="CI already registered")
     crudUsuario.create_user(db=db, user=user)
@@ -127,7 +149,7 @@ async def base_votante_iniciado(request: Request, db: Session = Depends(get_db))
 # Iniciar sesión
 @app.get("/iniciarsesion/", response_class=HTMLResponse)
 async def iniciar_sesion_template(request: Request):
-    return templates.TemplateResponse("login-v2.html", {"request": request})
+    return templates.TemplateResponse("iniciarSesion.html.jinja", {"request": request})
 
 
 

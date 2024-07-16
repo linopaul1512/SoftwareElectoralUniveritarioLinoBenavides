@@ -10,7 +10,7 @@ class UserBase(BaseModel):
     Nombres: str
     Apellidos: str
     Fecha_nacimiento: date
-    direccion: str
+    Estado_vzla:str
     Correo_electronico: str
     Direccion_electoral: str
     Direccion_hab:str

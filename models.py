@@ -17,7 +17,8 @@ class Usuario(Base):
     IdRole = Column(String(50), ForeignKey('roles.IdRole'), nullable=False)
     Nombres = Column(String(100), nullable=False)
     Apellidos = Column(String, nullable=False)
-    Correo_electronico = Column(Integer, nullable=False)
+    Correo_electronico = Column(String(50), nullable=False)
+    Estado_vzla = Column(String(50), nullable=False)
     Direccion_hab = Column(String(50), nullable=False)
     Direccion_electoral = Column(String(50), nullable=False)
     Fecha_nacimiento = Column(String(50), nullable=False)
@@ -26,7 +27,7 @@ class Usuario(Base):
     Habilitado = Column(Boolean(255), nullable=False)
     Contrasena = Column(String(255), nullable=False)
     Estado = Column(String(255), nullable=False)
-
+    
     rol = relationship("Rol", back_populates="usuarios")
     candidatos = relationship("Candidato", back_populates="usuario")
     usuarios = relationship("Voto", back_populates="usuario")

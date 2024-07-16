@@ -1,0 +1,23 @@
+{% extends 'base.html.jinja' %}
+
+{% block content %}
+
+<h1 class="titulo"> {% block title %} Iniciar Sesión {% endblock %}</h1>
+
+<form action="{{ url_for('iniciar_sesion_post') }}" method="post">
+    
+    <div>
+        <label for="Correo_electronico">Correo electrónico: </label><br>
+        <input type="text" class="form-control" name="Correo_electronico" placeholder="Correo_electronico" required>
+        <br>
+    </div>
+
+    <div>
+        <label for="Contrasena">Contraseña: </label><br>
+        <input type="password" class="form-control" name="Contrasena" placeholder="Contrasena" required>
+        <br>
+    </div>
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}

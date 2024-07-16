@@ -1,140 +1,100 @@
-{% extends 'basegeestionUsuario.html.jinja' %}
 
+{% extends 'base.html.jinja' %}
 
 {% block content %}
 
+<h1 class="titulo"> {% block title %} Ingrese un nuevo votante {% endblock %}</h1>
 
-
-  
-<body class="hold-transition register-page">
-<div class="register-box">
-  <div class="card card-outline card-primary">
-    <div class="card-header text-center">
-      <a href="../../index2.html" class="h1"><b>Admin</b>LTE</a>
+<form action="{{ url_for('crear_usuario_post') }}" method="post"  enctype="multipart/form-data">
+    <div>
+        <label for="Nombres">Nombres: </label><br>
+        <input type="text" class="form-control" name="Nombres" placeholder="Nombres" required>
+        <br>
     </div>
-    <div class="card-body">
-      <p class="login-box-msg">Register a new membership</p>
-
-      <form action="../../index.html" method="post">
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Nombres" name="Nombres">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-user"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="email" class="form-control" name="Apellidos" placeholder="Apellidos">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="number" class="form-control" name="Contrasena" placeholder="Contrasena">
-          <div class="input-group-append"> 
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="number" class="form-control" name="CI" placeholder="CI">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="number" class="form-control" name="Fecha_nacimiento" placeholder="Fecha_nacimiento">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" name="Direccion_hab" placeholder="Direccion_hab">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="number" class="form-control" name="Direccion_electoral" placeholder="Direccion_electoral">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="email" class="form-control" name="Correo_electronico" placeholder="Correo_electronico">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="number" class="form-control" name="Telefono" placeholder="Telefono">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="file" id="Imagen" class="form-control" name="Imagen" placeholder="Imagen">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div><div class="input-group mb-3">
-          <input type="number" class="form-control" name="Telefono" placeholder="Telefono">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-8">
-            <div class="icheck-primary">
-              <input type="checkbox" id="agreeTerms" name="terms" value="agree">
-              <label for="agreeTerms">
-               I agree to the <a href="#">terms</a>
-              </label>
-            </div>
-          </div>
-          <!-- /.col -->
-          <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block">Register</button>
-          </div>
-          <!-- /.col -->
-        </div>
-      </form>
-
-     
-
-      <a href="login.html" class="text-center">I already have a membership</a>
+    <div>
+        <label for="Apellidos">Apellidos: </label><br>
+        <input type="text" class="form-control" name="Apellidos" placeholder="Apellidos" required>
+        <br>
     </div>
-    <!-- /.form-box -->
-  </div><!-- /.card -->
-</div>
-<!-- /.register-box -->
+    <div>
+        <label for="CI">Cédula de identidad: </label><br>
+        <input type="number" class="form-control" name="CI" placeholder="CI" required>
+        <br>
+    </div>
+    <div>
+        <label for="Fecha_nacimiento">Fecha de nacimiento: </label><br>
+        <input type="date" class="form-control" name="Fecha_nacimiento" placeholder="Fecha_nacimiento" required>
+        <br>
+    </div>
+    <div>
+        <label for="Direccion_hab">Dirección de habitación: </label><br>
+        <input type="text" class="form-control" name="Direccion_hab" placeholder="Direccion_hab" required>
+        <br>
+    </div>
+    <div>
+        <label for="Direccion_electoral">Dirección electoral: </label><br>
+        <input type="text" class="form-control" name="Direccion_electoral" placeholder="Direccion_electoral" required>
+        <br>
+    </div>
+    <div>
+      <label for="Estado_vzla">Región donde va a votar: </label><br>
+      <select class="form-control" name="Estado_vzla" required>
+                <option value="Extranjero">Extrajero</option>
+                <option value="Anzoategui">Anzoategui</option>
+                <option value="Amazonas">Amazonas</option>
+                <option value="Aragua">Aragua</option>
+                <option value="Bolivar">Bolivar</option>
+                <option value="Barinas">Barinas</option>
+                <option value="Capital">Distito Capital</option>
+                <option value="Carabobo">Carabobo</option>
+                <option value="Miranda">Miranda</option>
+                <option value="Yaracuy">Yaracuy</option>
+                <option value="Lara">Lara</option>
+                <option value="Falcon">Falcon</option>
+                <option value="Trujillo">Trujillo</option>
+                <option value="Merida">Merida</option>
+                <option value="Tachira">Táchira</option>
+                <option value="Apuire">Apure</option>
+                <option value="Portuguesa">Portuguesa</option>
+                <option value="Cojedes">Cojedes</option>
+                <option value="Guarico">Guarico</option>
+                <option value="Monagas">Monagas</option>
+                <option value="Sucre">Sucre</option>
+                <option value="Nueva_Esparta">Nueva Esparta</option>
+                <option value="Falcon">Falcon</option>
+                <option value="Delta_Amacuro">Delta_Amacuro</option>
+                <option value="Zulia">Zulia</option>
+            </select>
+    </div>
+    <div>
+        <label for="Correo_electronico">Correo electrónico: </label><br>
+        <input type="email" class="form-control" name="Correo_electronico" placeholder="Correo_electronico" required>
+        <br>
+    </div>
+    <div>
+        <label for="Telefono">Teléfono: </label><br>
+        <input type="text" class="form-control" name="Telefono" placeholder="Telefono" required>
+        <br>
+    </div>
 
-<!-- jQuery -->
-<script src="../../plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="../../dist/js/adminlte.min.js"></script>
-</body>
+    <div>
+        <label for="Contrasena">Contraseña: </label><br>
+        <input type="password" class="form-control" name="Contrasena" placeholder="Contrasena" required>
+        <br>
+    </div>
+   
+    <div>
+        <label for="Imagen">Imagen:</label>
+        <input type="file" id="Imagen" name="Imagen" required><br>
+    </div>
+    <div>
+        <input type="hidden" class="form-control" name="contrasena" placeholder="contrasena" required>
+        <br>
+    </div>
+   
+
+    <input type="submit" value="Submit">
+</form>
+
 
 {% endblock %}

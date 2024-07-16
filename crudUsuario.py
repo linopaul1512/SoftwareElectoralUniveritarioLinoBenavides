@@ -23,6 +23,7 @@ def create_user(db: Session, user: schemas.User):
         Fecha_nacimiento= user.Fecha_nacimiento,
         Correo_electronico= user.Correo_electronico,
         Direccion_electoral= user.Direccion_electoral,
+        Estado_vzla= user.Estado_vzla,
         Direccion_hab= user.Direccion_hab,
         Telefono= user.Telefono,
         Habilitado= user.Habilitado,
@@ -42,6 +43,7 @@ def create_user(db: Session, user: schemas.User):
         Correo_electronico= db_user.Correo_electronico,
         Direccion_electoral= db_user.Direccion_electoral,
         Direccion_hab= db_user.Direccion_hab,
+        Estado_vzla=db_user.Estado_vzla,
         Telefono= db_user.Telefono,
         Habilitado= db_user.Habilitado,
         Contrasena = db_user.Contrasena, 
@@ -59,7 +61,7 @@ def create_user(db: Session, user: schemas.User):
     
 
 def buscar_usuario(db: Session, user_id: str): 
-    user_return = db.query(models.Usuario).filter(models.Usuario.cedula_identidad == user_id).first()
+    user_return = db.query(models.Usuario).filter(models.Usuario.CI == user_id).first()
 
     if user_return == None:
         return Respuesta[schemas.User](ok=False, mensaje='Usuario no encontrado')
@@ -73,6 +75,7 @@ def buscar_usuario(db: Session, user_id: str):
         Correo_electronico= user_return.Correo_electronico,
         Direccion_electoral= user_return.Direccion_electoral,
         Direccion_hab= user_return.Direccion_hab,
+        Estado_vzla=user_return.Estado_vzla,
         Telefono= user_return.Telefono,
         Habilitado= user_return.Habilitado,
         Contrasena = user_return.Contrasena, 
@@ -98,7 +101,7 @@ def update_user(db: Session, user_id: int, user: schemas.UserUpdate):
         return None
     for key, value in user.dict().items():
         if value:
-            if key == 'contrasena':
+            if key == 'Contrasena':
                 setattr(db_user, key, get_password_hash(value))
             else:
                 setattr(db_user, key, value)
