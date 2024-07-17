@@ -25,10 +25,6 @@ from datetime import date, datetime, timedelta, timezone
 from sqlApp.database import SessionLocal, engine
 
 
-
-
-
-
 # Crear todas las tablas en la base de datos
 models.Base.metadata.create_all(bind=engine)
 
@@ -93,7 +89,7 @@ async def crear_usuario_post(request: Request,
 
     print("Usuario: ", Correo_electronico)
     user = schemas.UserCreate(CI=CI, 
-                              IdRole="2",
+                              IdRole="1",
                               Nombres=Nombres, 
                               Apellidos=Apellidos, 
                               Estado_vzla = Estado_vzla,
@@ -103,9 +99,9 @@ async def crear_usuario_post(request: Request,
                               Fecha_nacimiento=Fecha_nacimiento,
                               Telefono=Telefono,
                               Imagen=imagenpath,
-                              Habilitado="Si",
+                              Habilitado= True,
                               Contrasena=Contrasena,
-                              Estado="Activo"
+                              Estado= "Activo"
                               )
     db_user = crudUsuario.get_user_by_email(db, email=user.Correo_electronico)
     print("Db user: ", db_user)
@@ -176,12 +172,12 @@ async def iniciar_sesion_post(request: Request,
     request.session['CI'] = user.CI
     request.session['IdRole'] = user.IdRole
     
-    if user.IdRole == "1":
-        return RedirectResponse(url="/base/votante/", status_code=status.HTTP_303_SEE_OTHER)
-    elif user.IdRole == "2":
+    print("Rol antess del ciclo", user.IdRole)
+    if user.IdRole == 1:
         return RedirectResponse(url="/base/administrador/", status_code=status.HTTP_303_SEE_OTHER)
+    elif user.IdRole == 2:
+        return RedirectResponse(url="/base/votante/", status_code=status.HTTP_303_SEE_OTHER)
     else:
-        print("user", user.IdRole )
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
