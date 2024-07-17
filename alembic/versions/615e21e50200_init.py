@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 83a43897e454
+Revision ID: 615e21e50200
 Revises: 
-Create Date: 2024-07-16 09:20:45.601220
+Create Date: 2024-07-17 10:02:00.651802
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '83a43897e454'
+revision: str = '615e21e50200'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -42,7 +42,7 @@ def upgrade() -> None:
     )
     op.create_table('usuarios',
     sa.Column('CI', sa.Integer(), nullable=False),
-    sa.Column('IdRole', sa.String(length=50), nullable=False),
+    sa.Column('IdRole', sa.Integer(), nullable=False),
     sa.Column('Nombres', sa.String(length=100), nullable=False),
     sa.Column('Apellidos', sa.String(), nullable=False),
     sa.Column('Correo_electronico', sa.String(length=50), nullable=False),
@@ -52,7 +52,7 @@ def upgrade() -> None:
     sa.Column('Fecha_nacimiento', sa.String(length=50), nullable=False),
     sa.Column('Telefono', sa.String(length=50), nullable=False),
     sa.Column('Imagen', sa.String(length=255), nullable=False),
-    sa.Column('Habilitado', sa.Boolean(create_constraint=255), nullable=False),
+    sa.Column('Habilitado', sa.Boolean(), nullable=False),
     sa.Column('Contrasena', sa.String(length=255), nullable=False),
     sa.Column('Estado', sa.String(length=255), nullable=False),
     sa.ForeignKeyConstraint(['IdRole'], ['roles.IdRole'], ),

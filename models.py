@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Double, BOOLEAN, Time
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time
 from sqlalchemy.orm import relationship
 from sqlApp.database import Base
 
@@ -14,7 +14,7 @@ class Rol(Base):
 class Usuario(Base):
     __tablename__ = 'usuarios'
     CI = Column(Integer, primary_key=True)
-    IdRole = Column(String(50), ForeignKey('roles.IdRole'), nullable=False)
+    IdRole = Column(Integer, ForeignKey('roles.IdRole'), nullable=False)
     Nombres = Column(String(100), nullable=False)
     Apellidos = Column(String, nullable=False)
     Correo_electronico = Column(String(50), nullable=False)
@@ -24,13 +24,14 @@ class Usuario(Base):
     Fecha_nacimiento = Column(String(50), nullable=False)
     Telefono = Column(String(50), nullable=False)
     Imagen = Column(String(255), nullable=False)
-    Habilitado = Column(Boolean(255), nullable=False)
+    Habilitado = Column(Boolean, nullable=False)
     Contrasena = Column(String(255), nullable=False)
     Estado = Column(String(255), nullable=False)
-    
+
     rol = relationship("Rol", back_populates="usuarios")
     candidatos = relationship("Candidato", back_populates="usuario")
-    usuarios = relationship("Voto", back_populates="usuario")
+    votos = relationship("Voto", back_populates="usuario")
+
 
 class Frente(Base):
     __tablename__ = 'frentes'
@@ -38,23 +39,8 @@ class Frente(Base):
     Nombre = Column(String(255), nullable=False)
     Imagen = Column(String(255), nullable=False)
 
-    frentes = relationship("Candidato", back_populates="frente")
-    rol = relationship("Rol", back_populates="usuarios")
+    candidatos = relationship("Candidato", back_populates="frente")
 
-
-class Candidato(Base):
-    __tablename__ = 'candidatos'
-    IdCandidato = Column(Integer, primary_key=True)
-    IdFrente = Column(Integer, ForeignKey('frentes.IdFrente'), nullable=False)
-    IdEleccion = Column(Integer, ForeignKey('elecciones.Id_Eleccion'), nullable=False)
-    IdUsuario = Column(Integer, ForeignKey('usuarios.CI'), nullable=False)
-    Hora = Column(Time, nullable=False)
-    Estado = Column(String(255), nullable=False)
-    
-    usuario = relationship("Usuario", back_populates="candidatos")
-    frente = relationship("Frente", back_populates="frentes")
-    eleccion = relationship("Eleccion", back_populates="elecciones")
-    candidatos = relationship("Voto", back_populates="candidato")
 
 class Eleccion(Base):
     __tablename__ = 'elecciones'
@@ -67,7 +53,23 @@ class Eleccion(Base):
 
     candidatos = relationship("Candidato", back_populates="eleccion")
     votos = relationship("Voto", back_populates="eleccion")
-    
+
+
+class Candidato(Base):
+    __tablename__ = 'candidatos'
+    IdCandidato = Column(Integer, primary_key=True)
+    IdFrente = Column(Integer, ForeignKey('frentes.IdFrente'), nullable=False)
+    IdEleccion = Column(Integer, ForeignKey('elecciones.Id_Eleccion'), nullable=False)
+    IdUsuario = Column(Integer, ForeignKey('usuarios.CI'), nullable=False)
+    Hora = Column(Time, nullable=False)
+    Estado = Column(String(255), nullable=False)
+
+    usuario = relationship("Usuario", back_populates="candidatos")
+    frente = relationship("Frente", back_populates="candidatos")
+    eleccion = relationship("Eleccion", back_populates="candidatos")
+    votos = relationship("Voto", back_populates="candidato")
+
+
 class Voto(Base):
     __tablename__ = 'votos'
     IdVoto = Column(Integer, primary_key=True)
@@ -75,10 +77,8 @@ class Voto(Base):
     IdCandidato = Column(Integer, ForeignKey('candidatos.IdCandidato'), nullable=False)
     IdVotante = Column(Integer, ForeignKey('usuarios.CI'), nullable=False)
     Hora = Column(Time, nullable=False)
-   
 
     eleccion = relationship("Eleccion", back_populates="votos")
-    candidato = relationship("Candidato", back_populates="candidatos")
-    usuario = relationship("Usuario", back_populates="usuarios")
-
+    candidato = relationship("Candidato", back_populates="votos")
+    usuario = relationship("Usuario", back_populates="votos")
 

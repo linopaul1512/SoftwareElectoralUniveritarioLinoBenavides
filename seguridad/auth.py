@@ -32,10 +32,9 @@ def autenticar_usuario(db: Session, email: str, password: str):
     usuario = crudUsuario.get_user_by_email(db, email)
     if not usuario:
         return False
-    if not verificar_contrasena(password, usuario.contrasena):
+    if not verificar_contrasena(password, usuario.Contrasena):
         return False
     return usuario
-
 
 
 def crear_token_acceso(data: dict, expires_delta: Union[timedelta, None] = None):
@@ -50,47 +49,32 @@ def crear_token_acceso(data: dict, expires_delta: Union[timedelta, None] = None)
 
 
 def buscar_usuario(db: Session, user_id: str):
-    user = db.query(models.Usuario).filter(models.Usuario.cedula_identidad == user_id).first()
+    user = db.query(models.Usuario).filter(models.Usuario.CI == user_id).first()
     if user is None:
         return {"ok": False, "mensaje": "User not found"}
     usuario = schemas.User(
-        cedula_identidad = user.cedula_identidad,
-        nombre = user.nombre,
-        apellido = user.apellido,
-        direccion=user.direccion,
-        fecha_nacimiento=user.fecha_nacimiento,
-        correo_electronico=user.correo_electronico,
-        contrasena=user.contrasena,
-        tipo_usuario=user.tipo_usuario
+        CI = user.CI,
+        IdRole =user.IdRole,
+        Nombres = user.Nombres,
+        Apellidos = user.Apellidos,
+        Correo_electronico=user.Correo_electronico,
+        Estado_vzla=user.Estado_vzla,
+        Direccion_hab=user.Direccion_hab,
+        Direccion_electoral=user.Direccion_electoral,
+        Fecha_nacimiento=user.Fecha_nacimiento,
+        Telefono=user.Telefono,
+        Imagen=user.Imagen,
+        Habilitado=user.Habilitado,
+        Contrasena=user.Contrasena,
+        Estado=user.Estado
     )
     return {"ok": True, "mensaje": "User found", "data": usuario}
 
 
 
 
-#Esto es para el perfil
-async def obtener_usuario_actual(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    credenciales_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="No se pudieron validar las credenciales",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise credenciales_exception
-    except JWTError:
-        raise credenciales_exception
-    usuario = crudUsuario.get_user_by_email(db, email)
-    if usuario is None:
-        raise credenciales_exception
-    return usuario
 
 
-
-async def obtener_usuario_activo_actual(usuario_actual: models.Usuario = Depends(obtener_usuario_actual)):
-    return usuario_actual
 
 
     

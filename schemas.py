@@ -15,7 +15,7 @@ class UserBase(BaseModel):
     Direccion_electoral: str
     Direccion_hab:str
     Telefono: str
-    Habilitado: str
+    Habilitado: bool
     Contrasena: str
     Imagen: str
     Estado: str
