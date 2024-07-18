@@ -14,7 +14,7 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def create_user(db: Session, user: schemas.User):
+def create_user(db: Session, user: schemas.UserCreate):
         db_user = models.Usuario(
         CI = user.CI,
         IdRole= user.IdRole,

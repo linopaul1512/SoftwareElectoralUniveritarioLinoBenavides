@@ -1,6 +1,6 @@
 from typing import Optional, TypeVar, Generic
 from pydantic import BaseModel
-from datetime import date
+from datetime import date, time
 
 T = TypeVar('T')
 
@@ -39,6 +39,9 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     Correo_electronico: Optional[str] = None
 
+
+
+
 # Respuesta con datos genéricos
 class Respuesta(Generic[T], BaseModel):
     ok: bool
@@ -47,3 +50,43 @@ class Respuesta(Generic[T], BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+
+
+
+class FrontBase(BaseModel):
+    Nombre: str
+    Imagen: str
+
+class FrontCreate(FrontBase):
+   pass
+
+class FrontUpdate(FrontBase):
+   IdFrente: int
+
+class Front(FrontBase):
+   
+
+    class Config:
+        orm_mode = True
+
+
+
+class CandidateBase(BaseModel):
+    IdFrente: int
+    IdEleccion: int
+    IdUsuario: int
+    Hora: time
+    Estado: str
+   
+class  CandidateCreate(CandidateBase):
+   pass
+
+class CandidateUpdate(CandidateBase):
+   IdCandidato: int
+
+class Candidate(CandidateBase):
+   
+
+    class Config:
+        orm_mode = True

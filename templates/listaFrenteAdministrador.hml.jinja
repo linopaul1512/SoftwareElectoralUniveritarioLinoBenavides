@@ -1,0 +1,31 @@
+{% extends 'baseAdministrador.html.jinja' %}
+
+{% block content %}
+<h1>{% block title %} Frentes electorales {% endblock %}</h1>
+
+<table id="formcenter">
+    <tr>
+        <th>Nombre</th>
+        <th>Tarjeta</th>
+    </tr>
+
+    {% for front in Fronts %}
+    <tr>
+        <td>{{ front.Nombre }}</td>
+        <td><img src="/{{front.Imagen}}" alt="{{ front.Nombre }}" width="100"></td>
+
+        <td>
+            <form action="/front/delete/{{ front.IdFrente }}" method="post" style="display:inline;">
+                <button type="submit">Eliminar</button>
+            </form>
+         </td>
+
+        
+    </tr>
+    {% endfor %}
+
+    <td>
+        <button value="" onclick="window.location.href='/front/create/' ;" >Crear Frente Nuevo</button>
+    </td>
+</table>
+{% endblock %}

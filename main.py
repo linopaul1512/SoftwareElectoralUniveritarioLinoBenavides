@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 #from excepciones import Exception_No_Apto_Para_Artesano, Exception_No_Apto_Para_Cliente
 #from excepcionesUsuario import LoginExpired, Requires_el_Login_de_Exception
 import schemas
-import  models, seguridad.auth as auth, crudUsuario
+import  models, seguridad.auth as auth, crudUsuario, crudFrente, crudCandidato
 import seguridad.auth
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_400_BAD_REQUEST
@@ -52,7 +52,7 @@ def get_db():
         db.close()
 
 
-#Codigo de imagen de producto
+#Codigo de imagen 
 
 UPLOAD_DIR = "static/images/"
 if not os.path.exists(UPLOAD_DIR):
@@ -203,3 +203,108 @@ async def create_auth_header(request: Request, call_next):
         
     response = await call_next(request)
     return response
+
+
+
+#Frente electoral
+@app.post("/front/create/", response_model=schemas.FrontBase)
+async def crear_frente_post(request: Request, 
+                        Nombre: str = Form(...), 
+                        Imagen: UploadFile = File(...),
+                        db: Session = Depends(get_db)):
+  
+    imagenpath = save_upload_file(Imagen, UPLOAD_DIR)
+
+    print("Frente: ", Nombre)
+    front = schemas.FrontCreate(
+                              Nombre=Nombre,          
+                              Imagen=imagenpath
+                              )
+    crudFrente.create_front(db, front=front)
+    fronts = crudFrente.get_fronts(db)
+    for front in fronts:
+        print('Nombre: ', front.Nombre)
+    return templates.TemplateResponse("listaFrenteAdministrador.hml.jinja", {"request": request , "Fronts": fronts})
+
+
+
+@app.get("/fronts/list/", response_class=HTMLResponse, name="listar_frentes")
+async def listar_frentes(request: Request, db: Session = Depends(get_db)):
+    fronts = crudFrente.get_fronts(db)
+    if not fronts:
+        print("No fronts found")
+    else:
+        print(f"Found {len(fronts)} fronts")
+        for front in fronts:
+            print("Front ID:", front.IdFrente)
+            print("Front Name:", front.Nombre)
+    return templates.TemplateResponse("listaFrenteAdministrador.hml.jinja", {"request": request, "Fronts": fronts})
+
+
+@app.post("/front/delete/{front_id}/", response_class=HTMLResponse)
+async def eliminar_frente(request: Request, front_id: int, db: Session = Depends(get_db)):
+    crudFrente.delete_front(db=db, front_id=front_id)
+    return RedirectResponse(url='/fronts/list/', status_code=303)
+
+@app.get("/front/create/", response_class=HTMLResponse)
+async def crear_frente_template(request: Request, db: Session = Depends(get_db)):
+    fronts = crudFrente.get_fronts(db) 
+    return templates.TemplateResponse("crearFrenteAdministrador.html.jinja", {"request": request, "Fronts": fronts})
+
+
+#Candidato
+@app.post("/candidate/create/", response_model=schemas.CandidateBase)
+async def crear_candidato_post(request: Request, 
+                        IdCandidato: str = Form(...), 
+                        IdFrente: str = Form(...), 
+                        IdEleccion: str = Form(...), 
+                        IdUsuario: str = Form(...), 
+                        Hora: str = Form(...), 
+                        Estado: str = Form(...), 
+                        db: Session = Depends(get_db)):
+
+    print("Candidato: ", IdCandidato)
+    candidate = schemas.FrontCreate(
+                              IdCandidato=IdCandidato,          
+                              IdFrente=IdFrente,
+                              IdEleccion=IdEleccion,
+                              IdUsuario=IdUsuario,
+                              Hora=Hora,
+                              Estado=Estado
+                              )
+    crudCandidato.create_candidate(db, candidate=candidate)
+    candidates = crudCandidato.get_candidates(db)
+    for candidate in candidates:
+        print('Candidato: ', candidate.IdCandidato)
+    return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request , "Candidates": candidates})
+
+
+
+@app.get("/candidates/list/", response_class=HTMLResponse, name="listar_candidatos")
+async def listar_candidatos(request: Request, db: Session = Depends(get_db)):
+    candidates = crudCandidato.get_candidates(db)
+    if not candidates:
+        print("No candidate found")
+    else:
+        print(f"Found {len(candidates)} fronts")
+        for candidate in candidates:
+            print("ID:", candidate.IdCandidato)
+            print("Elección:", candidate.IdEleccion)
+    return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request, "Candidates": candidates})
+
+
+@app.post("/candidate/delete/{candidate_id}/", response_class=HTMLResponse)
+async def eliminar_candidato(request: Request, candidate_id: int, db: Session = Depends(get_db)):
+    crudCandidato.delete_candidate(db=db, candidate_id=candidate_id)
+    return RedirectResponse(url='/candidates/list/', status_code=303)
+
+
+@app.get("/candidate/create/", response_class=HTMLResponse)
+async def crear_candidato_template(request: Request, db: Session = Depends(get_db)):
+    candidates = crudCandidato.get_candidates(db) 
+    return templates.TemplateResponse("crearFrenteAdministrador.html.jinja", {"request": request, "Canidates": candidates})
+
+
+
+
+

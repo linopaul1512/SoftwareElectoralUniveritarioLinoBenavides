@@ -1,0 +1,50 @@
+
+{% extends 'base.html.jinja' %}
+
+{% block content %}
+
+<h1 class="titulo"> {% block title %} Ingrese un nuevo votante {% endblock %}</h1>
+
+<form action="{{ url_for('crear_usuario_post') }}" method="post"  enctype="multipart/form-data">
+    <div>
+        <label for="Nombres">Nombres: </label><br>
+        <input type="text" class="form-control" name="Nombres" placeholder="Nombres" required>
+        <br>
+    </div>
+    <div>
+        <label for="Apellidos">Apellidos: </label><br>
+        <input type="text" class="form-control" name="Apellidos" placeholder="Apellidos" required>
+        <br>
+    </div>
+    <div>
+        <label for="CI">Cédula de identidad: </label><br>
+        <input type="number" class="form-control" name="CI" placeholder="CI" required>
+        <br>
+    </div>
+    <div>
+        <label for="Fecha_nacimiento">Fecha de nacimiento: </label><br>
+        <input type="date" class="form-control" name="Fecha_nacimiento" placeholder="Fecha_nacimiento" required>
+        <br>
+    </div>
+    <div>
+        <label for="Direccion_hab">Dirección de habitación: </label><br>
+        <input type="text" class="form-control" name="Direccion_hab" placeholder="Direccion_hab" required>
+        <br>
+    </div>
+    <div>
+        <label for="Direccion_electoral">Dirección electoral: </label><br>
+        <input type="text" class="form-control" name="Direccion_electoral" placeholder="Direccion_electoral" required>
+        <br>
+    </div>
+   
+    <div>
+        <input type="hidden" class="form-control" name="contrasena" placeholder="contrasena" required>
+        <br>
+    </div>
+   
+
+    <input type="submit" value="Submit">
+</form>
+
+
+{% endblock %}
