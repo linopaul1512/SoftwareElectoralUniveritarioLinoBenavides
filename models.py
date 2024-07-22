@@ -21,7 +21,7 @@ class Usuario(Base):
     Estado_vzla = Column(String(50), nullable=False)
     Direccion_hab = Column(String(50), nullable=False)
     Direccion_electoral = Column(String(50), nullable=False)
-    Fecha_nacimiento = Column(String(50), nullable=False)
+    Fecha_nacimiento = Column(Date, nullable=False)
     Telefono = Column(String(50), nullable=False)
     Imagen = Column(String(255), nullable=False)
     Habilitado = Column(Boolean, nullable=False)
@@ -61,7 +61,6 @@ class Candidato(Base):
     IdFrente = Column(Integer, ForeignKey('frentes.IdFrente'), nullable=False)
     IdEleccion = Column(Integer, ForeignKey('elecciones.Id_Eleccion'), nullable=False)
     IdUsuario = Column(Integer, ForeignKey('usuarios.CI'), nullable=False)
-    Hora = Column(Time, nullable=False)
     Estado = Column(String(255), nullable=False)
 
     usuario = relationship("Usuario", back_populates="candidatos")

@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 615e21e50200
+Revision ID: 16d4bc799eb3
 Revises: 
-Create Date: 2024-07-17 10:02:00.651802
+Create Date: 2024-07-22 11:16:19.911044
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '615e21e50200'
+revision: str = '16d4bc799eb3'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -49,7 +49,7 @@ def upgrade() -> None:
     sa.Column('Estado_vzla', sa.String(length=50), nullable=False),
     sa.Column('Direccion_hab', sa.String(length=50), nullable=False),
     sa.Column('Direccion_electoral', sa.String(length=50), nullable=False),
-    sa.Column('Fecha_nacimiento', sa.String(length=50), nullable=False),
+    sa.Column('Fecha_nacimiento', sa.Date(), nullable=False),
     sa.Column('Telefono', sa.String(length=50), nullable=False),
     sa.Column('Imagen', sa.String(length=255), nullable=False),
     sa.Column('Habilitado', sa.Boolean(), nullable=False),
@@ -63,7 +63,6 @@ def upgrade() -> None:
     sa.Column('IdFrente', sa.Integer(), nullable=False),
     sa.Column('IdEleccion', sa.Integer(), nullable=False),
     sa.Column('IdUsuario', sa.Integer(), nullable=False),
-    sa.Column('Hora', sa.Time(), nullable=False),
     sa.Column('Estado', sa.String(length=255), nullable=False),
     sa.ForeignKeyConstraint(['IdEleccion'], ['elecciones.Id_Eleccion'], ),
     sa.ForeignKeyConstraint(['IdFrente'], ['frentes.IdFrente'], ),

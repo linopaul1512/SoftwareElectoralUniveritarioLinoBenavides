@@ -1,7 +1,7 @@
-{% extends 'baseAdministrador.html.jinja' %}
+{% extends 'baseVotante.html.jinja' %}
 
 {% block content %}
-<h1>{% block title %} Candidatos {% endblock %}</h1>
+<h1>{% block title %} Frentes electorales {% endblock %}</h1>
 
 <table id="formcenter">
     <tr>
@@ -24,9 +24,7 @@
     </tr>
     {% endfor %}
 
-    <td>
-        <button value="" onclick="window.location.href='/candidate/create/' ;" >Crear Candidato</button>
-    </td>
+   
 
 
     

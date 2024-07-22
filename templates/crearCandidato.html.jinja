@@ -1,50 +1,49 @@
-
-{% extends 'base.html.jinja' %}
+{% extends 'baseAdministrador.html.jinja' %}
 
 {% block content %}
 
-<h1 class="titulo"> {% block title %} Ingrese un nuevo votante {% endblock %}</h1>
+<h1 class="titulo"> {% block title %} Ingrese un nuevo candidato {% endblock %}</h1>
 
-<form action="{{ url_for('crear_usuario_post') }}" method="post"  enctype="multipart/form-data">
+<form action="{{ url_for('crear_usuario_post') }}" method="post" enctype="multipart/form-data">
     <div>
-        <label for="Nombres">Nombres: </label><br>
-        <input type="text" class="form-control" name="Nombres" placeholder="Nombres" required>
+        <input type="hidden" class="form-control" name="IdCandidato" placeholder="IdCandidato" required>
         <br>
     </div>
+
+    <label for="IdUsuario">Usuario que se postula:</label>
+    <br>
     <div>
-        <label for="Apellidos">Apellidos: </label><br>
-        <input type="text" class="form-control" name="Apellidos" placeholder="Apellidos" required>
+        <select name="IdUsuario" id="IdUsuario" required>
+            {% for user in users %}
+                <option value="{{ user.IdUsuario }}">{{ user.Nombres }}</option>
+            {% endfor %}
+        </select>
         <br>
     </div>
+
+    <label for="IdFrente">Frente al que se postula:</label>
+    <br>
     <div>
-        <label for="CI">Cédula de identidad: </label><br>
-        <input type="number" class="form-control" name="CI" placeholder="CI" required>
+        <select name="IdFrente" id="IdFrente" required>
+            {% for frente in frentes %}
+                <option value="{{ frente.IdFrente }}">{{ frente.Nombre }}</option>
+            {% endfor %}
+        </select>
         <br>
     </div>
+
+    <label for="IdEleccion">Elección en la que se postula:</label>
+    <br>
     <div>
-        <label for="Fecha_nacimiento">Fecha de nacimiento: </label><br>
-        <input type="date" class="form-control" name="Fecha_nacimiento" placeholder="Fecha_nacimiento" required>
+        <select name="IdEleccion" id="IdEleccion" required>
+            {% for eleccion in elecciones %}
+                <option value="{{ eleccion.IdEleccion }}">{{ eleccion.Nombre }}</option>
+            {% endfor %}
+        </select>
         <br>
     </div>
-    <div>
-        <label for="Direccion_hab">Dirección de habitación: </label><br>
-        <input type="text" class="form-control" name="Direccion_hab" placeholder="Direccion_hab" required>
-        <br>
-    </div>
-    <div>
-        <label for="Direccion_electoral">Dirección electoral: </label><br>
-        <input type="text" class="form-control" name="Direccion_electoral" placeholder="Direccion_electoral" required>
-        <br>
-    </div>
-   
-    <div>
-        <input type="hidden" class="form-control" name="contrasena" placeholder="contrasena" required>
-        <br>
-    </div>
-   
 
     <input type="submit" value="Submit">
 </form>
-
 
 {% endblock %}

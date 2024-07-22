@@ -1,15 +1,15 @@
 {% extends 'baseAdministrador.html.jinja' %}
 
 {% block content %}
-<h1>{% block title %} Candidatos {% endblock %}</h1>
+<h1>{% block title %} Frentes electorales {% endblock %}</h1>
 
 <table id="formcenter">
     <tr>
-        <th>Nombre</th>
+        <th></th>
         <th>Tarjeta</th>
     </tr>
 
-    {% for front in Fronts %}
+    {% for election in Elections %}
     <tr>
         <td>{{ front.Nombre }}</td>
         <td><img src="/{{front.Imagen}}" alt="{{ front.Nombre }}" width="100"></td>
@@ -25,10 +25,7 @@
     {% endfor %}
 
     <td>
-        <button value="" onclick="window.location.href='/candidate/create/' ;" >Crear Candidato</button>
+        <button value="" onclick="window.location.href='/front/create/' ;" >Crear Frente Nuevo</button>
     </td>
-
-
-    
 </table>
 {% endblock %}

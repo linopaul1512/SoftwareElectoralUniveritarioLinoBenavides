@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 #from excepciones import Exception_No_Apto_Para_Artesano, Exception_No_Apto_Para_Cliente
 #from excepcionesUsuario import LoginExpired, Requires_el_Login_de_Exception
 import schemas
-import  models, seguridad.auth as auth, crudUsuario, crudFrente, crudCandidato
+import  models, seguridad.auth as auth, crudUsuario, crudFrente, crudCandidato, crudEleccion
 import seguridad.auth
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_400_BAD_REQUEST
@@ -252,6 +252,52 @@ async def crear_frente_template(request: Request, db: Session = Depends(get_db))
     return templates.TemplateResponse("crearFrenteAdministrador.html.jinja", {"request": request, "Fronts": fronts})
 
 
+#Elección
+@app.post("/election/create/", response_model=schemas.ElectionBase)
+async def crear_eleccion_post(request: Request, 
+                        Id_Eleccion: str = Form(...), 
+                        Fecha: str = Form(...), 
+                        Hora_apertura: str = Form(...), 
+                        Hora_cierre: str = Form(...), 
+                        Pob_hab: str = Form(...), 
+                        Estado: str = Form(...), 
+                        db: Session = Depends(get_db)):
+
+    print("Eleccion: ", Id_Eleccion)
+    election = schemas.ElectionCreate(
+                              Id_Eleccion=Id_Eleccion,          
+                              Fecha=Fecha,
+                              Hora_apertura=Hora_apertura,
+                              Hora_cierre=Hora_cierre,
+                              Pob_hab=Pob_hab,
+                              Estado=Estado
+                              )
+    crudEleccion.create_election(db, election=election)
+    elections = crudEleccion.get_elections(db)
+    for election in elections:
+        print(elections)
+    return templates.TemplateResponse("listaEleccionAdministrador.html.jinja", {"request": request , "Elections": elections})
+
+@app.get("/elections/list/", response_class=HTMLResponse, name="listar_elecciones")
+async def listar_elecciones(request: Request, db: Session = Depends(get_db)):
+    elections = crudEleccion.get_elections(db)
+    return templates.TemplateResponse("listaEleccionAdministrador.html.jinja", {"request": request, "Elections": elections})
+
+
+
+@app.post("/election/delete/{election_id}/", response_class=HTMLResponse)
+async def eliminar_eleciion(request: Request, election_id: int, db: Session = Depends(get_db)):
+    crudEleccion.delete_election(db=db, election_id=election_id)
+    return RedirectResponse(url='/elections/list/', status_code=303)
+
+
+@app.get("/election/create/", response_class=HTMLResponse)
+async def crear_eleccion_template(request: Request, db: Session = Depends(get_db)):
+    elections = crudEleccion.get_elections(db) 
+    return templates.TemplateResponse("crearEleccionAdministrador.html.jinja", {"request": request, "Elections": elections})
+
+
+
 #Candidato
 @app.post("/candidate/create/", response_model=schemas.CandidateBase)
 async def crear_candidato_post(request: Request, 
@@ -273,24 +319,23 @@ async def crear_candidato_post(request: Request,
                               Estado=Estado
                               )
     crudCandidato.create_candidate(db, candidate=candidate)
-    candidates = crudCandidato.get_candidates(db)
+    candidates = crudCandidato.get_candidates_user(db)
     for candidate in candidates:
-        print('Candidato: ', candidate.IdCandidato)
+        print(candidate)
     return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request , "Candidates": candidates})
 
 
 
 @app.get("/candidates/list/", response_class=HTMLResponse, name="listar_candidatos")
 async def listar_candidatos(request: Request, db: Session = Depends(get_db)):
-    candidates = crudCandidato.get_candidates(db)
-    if not candidates:
-        print("No candidate found")
-    else:
-        print(f"Found {len(candidates)} fronts")
-        for candidate in candidates:
-            print("ID:", candidate.IdCandidato)
-            print("Elección:", candidate.IdEleccion)
+    candidates = crudCandidato.get_candidates_user(db)
     return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request, "Candidates": candidates})
+
+
+@app.get("/candidates/list/votant", response_class=HTMLResponse, name="listar_candidatos")
+async def listar_candidatos_votante(request: Request, db: Session = Depends(get_db)):
+    candidates = crudCandidato.get_candidates_user(db)
+    return templates.TemplateResponse("listaCandidatoVotante.html.jinja", {"request": request, "Candidates": candidates})
 
 
 @app.post("/candidate/delete/{candidate_id}/", response_class=HTMLResponse)
@@ -302,9 +347,7 @@ async def eliminar_candidato(request: Request, candidate_id: int, db: Session = 
 @app.get("/candidate/create/", response_class=HTMLResponse)
 async def crear_candidato_template(request: Request, db: Session = Depends(get_db)):
     candidates = crudCandidato.get_candidates(db) 
-    return templates.TemplateResponse("crearFrenteAdministrador.html.jinja", {"request": request, "Canidates": candidates})
-
-
+    return templates.TemplateResponse("crearCandidato.html.jinja", {"request": request, "Canidates": candidates})
 
 
 
