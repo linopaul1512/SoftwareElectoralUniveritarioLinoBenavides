@@ -21,7 +21,7 @@ import os
 import uuid
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from sqlApp.database import SessionLocal, engine
 
 
@@ -89,7 +89,7 @@ async def crear_usuario_post(request: Request,
 
     print("Usuario: ", Correo_electronico)
     user = schemas.UserCreate(CI=CI, 
-                              IdRole="1",
+                              IdRole="2",
                               Nombres=Nombres, 
                               Apellidos=Apellidos, 
                               Estado_vzla = Estado_vzla,
@@ -115,9 +115,10 @@ async def crear_usuario_post(request: Request,
 
 
 @app.get("/usuario/create/", response_class=HTMLResponse)
-async def create_usuario_template(request: Request):
+async def create_usuario_template(request: Request, db: Session = Depends(get_db)):
     print("Usuario get: ", )
-    return templates.TemplateResponse("crearUsuario.html.jinja", {"request": request})
+    roles = crudUsuario.get_roles(db)
+    return templates.TemplateResponse("crearUsuario.html.jinja", {"request": request, "Roles": roles})
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -175,7 +176,7 @@ async def iniciar_sesion_post(request: Request,
     print("Rol antess del ciclo", user.IdRole)
     if user.IdRole == 1:
         return RedirectResponse(url="/base/administrador/", status_code=status.HTTP_303_SEE_OTHER)
-    elif user.IdRole == 2:
+    elif user.IdRole == 2 or user.IdRole == 3:
         return RedirectResponse(url="/base/votante/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
@@ -255,28 +256,24 @@ async def crear_frente_template(request: Request, db: Session = Depends(get_db))
 #Elección
 @app.post("/election/create/", response_model=schemas.ElectionBase)
 async def crear_eleccion_post(request: Request, 
-                        Id_Eleccion: str = Form(...), 
-                        Fecha: str = Form(...), 
-                        Hora_apertura: str = Form(...), 
-                        Hora_cierre: str = Form(...), 
-                        Pob_hab: str = Form(...), 
-                        Estado: str = Form(...), 
-                        db: Session = Depends(get_db)):
+                              Nombre: date = Form(...),
+                              Fecha: date = Form(...), 
+                              Hora_apertura: time = Form(...), 
+                              Hora_cierre: time = Form(...), 
+                              Pob_hab: int = Form(...), 
+                              db: Session = Depends(get_db)):
 
-    print("Eleccion: ", Id_Eleccion)
     election = schemas.ElectionCreate(
-                              Id_Eleccion=Id_Eleccion,          
-                              Fecha=Fecha,
-                              Hora_apertura=Hora_apertura,
-                              Hora_cierre=Hora_cierre,
-                              Pob_hab=Pob_hab,
-                              Estado=Estado
-                              )
+        Nombre=Nombre,
+        Fecha=Fecha,
+        Hora_apertura=Hora_apertura,
+        Hora_cierre=Hora_cierre,
+        Pob_hab=Pob_hab,
+        Estado="Activa"
+    )
     crudEleccion.create_election(db, election=election)
     elections = crudEleccion.get_elections(db)
-    for election in elections:
-        print(elections)
-    return templates.TemplateResponse("listaEleccionAdministrador.html.jinja", {"request": request , "Elections": elections})
+    return templates.TemplateResponse("listaEleccionAdministrador.html.jinja", {"request": request, "Elections": elections})
 
 @app.get("/elections/list/", response_class=HTMLResponse, name="listar_elecciones")
 async def listar_elecciones(request: Request, db: Session = Depends(get_db)):
@@ -346,8 +343,10 @@ async def eliminar_candidato(request: Request, candidate_id: int, db: Session = 
 
 @app.get("/candidate/create/", response_class=HTMLResponse)
 async def crear_candidato_template(request: Request, db: Session = Depends(get_db)):
-    candidates = crudCandidato.get_candidates(db) 
-    return templates.TemplateResponse("crearCandidato.html.jinja", {"request": request, "Canidates": candidates})
+    users = crudUsuario.get_users(db) 
+    fronts = crudFrente.get_fronts(db)
+    elections = crudEleccion.get_elections(db)
+    return templates.TemplateResponse("crearCandidato.html.jinja", {"request": request, "Users": users, "Elections": elections, "Fronts":fronts})
 
 
-
+##

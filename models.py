@@ -50,7 +50,8 @@ class Eleccion(Base):
     Hora_cierre = Column(Time, nullable=False)
     Pob_hab = Column(Integer, nullable=False)
     Estado = Column(String(255), nullable=False)
-
+    Nombre = Column(String(255), nullable=False)
+   
     candidatos = relationship("Candidato", back_populates="eleccion")
     votos = relationship("Voto", back_populates="eleccion")
 
