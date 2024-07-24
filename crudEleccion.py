@@ -8,6 +8,7 @@ from schemas import Respuesta, Token
 
 def create_election(db: Session, election: schemas.ElectionCreate):
     db_election = models.Eleccion(
+        Nombre= election.Nombre, 
         Fecha=election.Fecha,
         Hora_apertura=election.Hora_apertura,
         Hora_cierre= election.Hora_cierre,

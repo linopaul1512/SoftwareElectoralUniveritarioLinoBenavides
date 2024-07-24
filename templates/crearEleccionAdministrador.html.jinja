@@ -1,23 +1,30 @@
-
 {% extends 'baseAdministrador.html.jinja' %}
 
 {% block content %}
 
 <h1 class="titulo"> {% block title %} Registra una elección {% endblock %}</h1>
 <form action="{{ url_for('crear_eleccion_post') }}" method="post">
+    
     <div>
-        <label for="Fecha">Fecha del comicio: </label><br>
-        <input type="text" class="form-control" name="Fecha" placeholder="Fecha" required>
+        <label for="Nombre">Nombre: </label><br>
+        <input type="text" class="form-control" name="Nombre" placeholder="Nombre" required>
         <br>
     </div>
+ 
+    <div>
+        <label for="Fecha">Fecha del comicio: </label><br>
+        <input type="date" class="form-control" name="Fecha" placeholder="Fecha" required>
+        <br>
+    </div>
+
     <div>
         <label for="Hora_apertura">Hora de apertura: </label><br>
-        <input type="text" class="form-control" name="Hora_apertura" placeholder="Hora_apertura" required>
+        <input type="time" class="form-control" name="Hora_apertura" placeholder="Hora_apertura" required>
         <br>
     </div>
     <div>
         <label for="Hora_cierre">Hora de cierre: </label><br>
-        <input type="number" class="form-control" name="Hora_cierre" placeholder="Hora_cierre" required>
+        <input type="time" class="form-control" name="Hora_cierre" placeholder="Hora_cierre" required>
         <br>
     </div>
     <div>
@@ -26,9 +33,7 @@
         <br>
     </div>
 
-
     <input type="submit" value="Submit">
 </form>
-
 
 {% endblock %}
