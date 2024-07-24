@@ -256,7 +256,7 @@ async def crear_frente_template(request: Request, db: Session = Depends(get_db))
 #Elección
 @app.post("/election/create/", response_model=schemas.ElectionBase)
 async def crear_eleccion_post(request: Request, 
-                              Nombre: date = Form(...),
+                              Nombre: str = Form(...), 
                               Fecha: date = Form(...), 
                               Hora_apertura: time = Form(...), 
                               Hora_cierre: time = Form(...), 
@@ -283,7 +283,7 @@ async def listar_elecciones(request: Request, db: Session = Depends(get_db)):
 
 
 @app.post("/election/delete/{election_id}/", response_class=HTMLResponse)
-async def eliminar_eleciion(request: Request, election_id: int, db: Session = Depends(get_db)):
+async def eliminar_election(request: Request, election_id: int, db: Session = Depends(get_db)):
     crudEleccion.delete_election(db=db, election_id=election_id)
     return RedirectResponse(url='/elections/list/', status_code=303)
 

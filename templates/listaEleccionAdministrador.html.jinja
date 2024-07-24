@@ -5,17 +5,17 @@
 
 <table id="formcenter">
     <tr>
-        <th></th>
-        <th>Tarjeta</th>
+        <th>Id elección</th>
+        <th>Nombre</th>
     </tr>
 
     {% for election in Elections %}
     <tr>
-        <td>{{ front.Nombre }}</td>
-        <td><img src="/{{front.Imagen}}" alt="{{ front.Nombre }}" width="100"></td>
+        <td>{{ election.Id_Eleccion }}</td>
+        <td>{{ election.Nombre }}</td>
 
         <td>
-            <form action="/front/delete/{{ front.IdFrente }}" method="post" style="display:inline;">
+            <form action="/election/delete/{{ election.election_id }}" method="post" style="display:inline;">
                 <button type="submit">Eliminar</button>
             </form>
          </td>
@@ -25,7 +25,7 @@
     {% endfor %}
 
     <td>
-        <button value="" onclick="window.location.href='/front/create/' ;" >Crear Frente Nuevo</button>
+        <button value="" onclick="window.location.href='/election/create/' ;" >Crear Elección Nuevo</button>
     </td>
 </table>
 {% endblock %}
