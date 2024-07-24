@@ -120,9 +120,3 @@ def delete_user(db: Session, user_id: int):
 
 def obtener_usuario(db: Session, user_id: str):
     return db.query(models.Usuario).filter(models.Usuario.CI == user_id).first()
-
-def get_users(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(models.Usuario).offset(skip).limit(limit).all()
-
-def get_roles(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(models.Rol).offset(skip).limit(limit).all()

@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 import models
 from pydantic import Field
 from sqlalchemy.orm import Session
-
 import schemas
 from schemas import Respuesta, Token
 
@@ -11,7 +10,6 @@ def create_front(db: Session, front: schemas.FrontCreate):
     db_front = models.Frente(
         Nombre=front.Nombre,
         Imagen=front.Imagen
-
     )
     db.add(db_front)
     db.commit()
