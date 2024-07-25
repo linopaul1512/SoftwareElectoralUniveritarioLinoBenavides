@@ -13,7 +13,7 @@
     <label for="IdUsuario">Usuario que se postula:</label>
     <br>
     <div>
-        <select name="IdUsuario" id="IdUsuario" required>
+        <select name="IdUsuario" id="IdUsuario" >
             {% for user in Users %}
                 <option value="{{ user.IdUsuario }}">{{ user.Nombres }}</option>
             {% endfor %}

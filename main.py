@@ -302,7 +302,6 @@ async def crear_candidato_post(request: Request,
                         IdFrente: str = Form(...), 
                         IdEleccion: str = Form(...), 
                         IdUsuario: str = Form(...), 
-                        Hora: str = Form(...), 
                         Estado: str = Form(...), 
                         db: Session = Depends(get_db)):
 
@@ -312,7 +311,6 @@ async def crear_candidato_post(request: Request,
                               IdFrente=IdFrente,
                               IdEleccion=IdEleccion,
                               IdUsuario=IdUsuario,
-                              Hora=Hora,
                               Estado=Estado
                               )
     crudCandidato.create_candidate(db, candidate=candidate)
@@ -329,10 +327,10 @@ async def listar_candidatos(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request, "Candidates": candidates})
 
 
-@app.get("/candidates/list/votant", response_class=HTMLResponse, name="listar_candidatos")
+""""@app.get("/candidates/list/votant", response_class=HTMLResponse, name="listar_candidatos")
 async def listar_candidatos_votante(request: Request, db: Session = Depends(get_db)):
     candidates = crudCandidato.get_candidates_user(db)
-    return templates.TemplateResponse("listaCandidatoVotante.html.jinja", {"request": request, "Candidates": candidates})
+    return templates.TemplateResponse("listaCandidatoVotante.html.jinja", {"request": request, "Candidates": candidates})"""
 
 
 @app.post("/candidate/delete/{candidate_id}/", response_class=HTMLResponse)
@@ -377,5 +375,7 @@ async def voto_seleccionado_template(request: Request, vote_id= int, db: Session
     candidate = crudCandidato.get_candidates(db)
     election = crudEleccion.get_elections(db)
     return templates.TemplateResponse("voto.html.jinja", {"request": request, "Vote": vote, "User": user, "Election": election, "Candidate":candidate})
+
+
 
 

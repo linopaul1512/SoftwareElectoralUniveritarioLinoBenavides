@@ -9,7 +9,7 @@ from schemas import Respuesta, Token
 def create_candidate(db: Session, candidate: schemas.CandidateCreate):
     db_candidate = models.Candidato(
         IdFrente= candidate.IdFrente,
-        IdEleccion= candidate.IdEleccion,
+        IdEleccion= candidate.Id_Eleccion,
         IdUsuario= candidate.IdUsuario,
         Estado= candidate.Estado
     )
