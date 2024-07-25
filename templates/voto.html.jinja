@@ -1,0 +1,33 @@
+{% extends 'baseVotante.html.jinja' %}
+
+{% block content %}
+
+<h1 class="titulo"> {% block title %} Confimación de voto {% endblock %}</h1>
+<img src="/{{ Candidate.Imagen }}" alt="{{ Candidate.Nombre }}" width="200">
+<h2>{{ Candidate.Nombre }}</h2>
+<form action="{{ url_for('crear_voto_post') }}" method="post">
+
+    <div>
+        <input type="hideen" class="form-control" name="IdEleccion" placeholder="IdEleccion" required>
+        <br>
+    </div>
+ 
+    <div>
+        <input type="hidden" class="form-control" name="IdCandidato" placeholder="IdCandidato" required>
+        <br>
+    </div>
+
+    <div>
+        <input type="IdVotante" class="form-control" name="IdVotante" placeholder="IdVotante" required>
+        <br>
+    </div>
+    
+    <div>
+        <input type="hidden" class="form-control" name="Hora" placeholder="Hora" required>
+        <br>
+    </div>
+
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}

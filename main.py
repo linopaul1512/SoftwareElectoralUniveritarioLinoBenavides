@@ -366,12 +366,16 @@ async def crear_voto_post(request: Request,
                               Hora=Hora
                               )
     crudVoto.create_vote(db, vote=vote)
-    return templates.TemplateResponse("votoseleccionado.html.jinja", {"request": request})
+    return templates.TemplateResponse("home.html.jinja", {"request": request}) 
 
 
-@app.get("/vote/create/", response_class=HTMLResponse)
-async def crear_candidato_template(request: Request, db: Session = Depends(get_db)):
-    users = crudUsuario.get_users(db) 
-    fronts = crudFrente.get_fronts(db)
-    elections = crudEleccion.get_elections(db)
-    return templates.TemplateResponse("crearCandidato.html.jinja", {"request": request, "Users": users, "Elections": elections, "Fronts":fronts})
+
+@app.get("/vote/create/{candidate_id}/{election_id}", response_class=HTMLResponse)
+async def voto_seleccionado_template(request: Request, vote_id= int, db: Session = Depends(get_db)):
+    vote  = crudVoto.get_vote_by_id(db, vote_id)
+    user = crudUsuario.get_users(db) 
+    candidate = crudCandidato.get_candidates(db)
+    election = crudEleccion.get_elections(db)
+    return templates.TemplateResponse("voto.html.jinja", {"request": request, "Vote": vote, "User": user, "Election": election, "Candidate":candidate})
+
+
