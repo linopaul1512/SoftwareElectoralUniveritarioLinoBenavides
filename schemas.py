@@ -93,3 +93,21 @@ class ElectionUpdate(ElectionBase):
 class Election(ElectionBase):
     class Config:
         orm_mode = True
+
+
+class VoteBase(BaseModel):
+    IdVoto: int
+    IdEleccion: int
+    IdCandidato: int
+    IdVotante: int
+    Hora: time
+
+class VoteCreate(VoteBase):
+    pass
+
+class VoteUpdate(VoteBase):
+    IdVoto: int
+
+class Vote(VoteBase):
+    class Config:
+        orm_mode = True

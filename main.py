@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 #from excepciones import Exception_No_Apto_Para_Artesano, Exception_No_Apto_Para_Cliente
 #from excepcionesUsuario import LoginExpired, Requires_el_Login_de_Exception
 import schemas
-import  models, seguridad.auth as auth, crudUsuario, crudFrente, crudCandidato, crudEleccion
+import  models, seguridad.auth as auth, crudUsuario, crudFrente, crudCandidato, crudEleccion, crudVoto
 import seguridad.auth
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_400_BAD_REQUEST
@@ -176,7 +176,7 @@ async def iniciar_sesion_post(request: Request,
     print("Rol antess del ciclo", user.IdRole)
     if user.IdRole == 1:
         return RedirectResponse(url="/base/administrador/", status_code=status.HTTP_303_SEE_OTHER)
-    elif user.IdRole == 2 or user.IdRole == 3:
+    elif user.IdRole == 2 or user.IdRole == 3 or user.IdRole == 4 or user.IdRole == 5:
         return RedirectResponse(url="/base/votante/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
@@ -349,4 +349,29 @@ async def crear_candidato_template(request: Request, db: Session = Depends(get_d
     return templates.TemplateResponse("crearCandidato.html.jinja", {"request": request, "Users": users, "Elections": elections, "Fronts":fronts})
 
 
-##
+#Voto
+@app.post("/vote/create/", response_model=schemas.VoteBase)
+async def crear_voto_post(request: Request, 
+                        IdEleccion: int = Form(...), 
+                        IdCandidato: int = Form(...), 
+                        IdVotante: int = Form(...), 
+                        Hora: str = Form(...), 
+                        db: Session = Depends(get_db)):
+
+    print("Vote: ", IdEleccion)
+    vote = schemas.VoteCreate(
+                              IdEleccion=IdEleccion,          
+                              IdCandidato=IdCandidato,
+                              IdVotante=IdVotante,
+                              Hora=Hora
+                              )
+    crudVoto.create_vote(db, vote=vote)
+    return templates.TemplateResponse("votoseleccionado.html.jinja", {"request": request})
+
+
+@app.get("/vote/create/", response_class=HTMLResponse)
+async def crear_candidato_template(request: Request, db: Session = Depends(get_db)):
+    users = crudUsuario.get_users(db) 
+    fronts = crudFrente.get_fronts(db)
+    elections = crudEleccion.get_elections(db)
+    return templates.TemplateResponse("crearCandidato.html.jinja", {"request": request, "Users": users, "Elections": elections, "Fronts":fronts})
