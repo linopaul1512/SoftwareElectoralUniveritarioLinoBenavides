@@ -33,7 +33,7 @@ def delete_vote(db: Session, vote_id: int):
     return db_vote
 
 def get_election_by_id(db: Session, election_id: int):
-    return db.query(models.Eleccion).filter(models.Eleccion.IdEleccion == election_id).first()
+    return db.query(models.Eleccion).filter(models.Eleccion.Id_Eleccion == election_id).first()
 
 def get_candidate_by_id(db: Session, candidate_id: int):
     return db.query(models.Candidato).filter(models.Candidato.IdCandidato == candidate_id).first()
