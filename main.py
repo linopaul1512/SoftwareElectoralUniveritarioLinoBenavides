@@ -324,7 +324,7 @@ async def listar_candidatos(request: Request, db: Session = Depends(get_db)):
 @app.get("/candidates/list/votant", response_class=HTMLResponse, name="listar_candidatos")
 async def listar_candidatos_votante(request: Request, db: Session = Depends(get_db)):
     candidates = crudCandidato.get_candidates_user(db)
-    return templates.TemplateResponse("listaCandidatoVotante.html.jinja", {"request": request, "Candidates": candidates})
+    return templates.TemplateResponse("tarjetonelectoral.html.jinja", {"request": request, "Candidates": candidates})
 
 @app.post("/candidate/delete/{candidate_id}/", response_class=HTMLResponse)
 async def eliminar_candidato(request: Request, candidate_id: int, db: Session = Depends(get_db)):
@@ -351,7 +351,6 @@ async def voto_seleccionado_template(request: Request, vote_id= int, db: Session
 
 
 
-from fastapi import HTTPException, status
 
 @app.post("/vote/create/", response_model=schemas.VoteBase)
 async def crear_voto_post(

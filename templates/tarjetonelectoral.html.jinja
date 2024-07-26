@@ -11,7 +11,7 @@
 
     {% for canidate in Candidates %}
     <tr>
-        <td>{{ front.Nombre }}</td>
+        <td>{{ Candidates.Nombre }}</td>
         <td onclick="window.location.href='/vote/create/{{ canidate.IdCandidato }}/{{ election.IdEleccion }}';"><img src="/{{ canidate.Imagen }}" alt="{{ canidate.Nombre }}" width="100"></td>
     </tr>
     {% endfor %}
