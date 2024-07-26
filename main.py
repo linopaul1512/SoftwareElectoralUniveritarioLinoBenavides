@@ -297,28 +297,23 @@ async def crear_eleccion_template(request: Request, db: Session = Depends(get_db
 
 #Candidato
 @app.post("/candidate/create/", response_model=schemas.CandidateBase)
-async def crear_candidato_post(request: Request, 
-                        IdCandidato: str = Form(...), 
-                        IdFrente: str = Form(...), 
-                        IdEleccion: str = Form(...), 
-                        IdUsuario: str = Form(...), 
-                        Estado: str = Form(...), 
-                        db: Session = Depends(get_db)):
-
-    print("Candidato: ", IdCandidato)
-    candidate = schemas.FrontCreate(
-                              IdCandidato=IdCandidato,          
-                              IdFrente=IdFrente,
-                              IdEleccion=IdEleccion,
-                              IdUsuario=IdUsuario,
-                              Estado=Estado
-                              )
+async def crear_candidato_post(
+    request: Request,
+    IdFrente: int = Form(...),
+    IdEleccion: int = Form(...),
+    IdUsuario: int = Form(...),
+    db: Session = Depends(get_db)
+):
+   
+    candidate = schemas.CandidateCreate(
+        IdFrente=IdFrente,
+        IdEleccion=IdEleccion,
+        IdUsuario=IdUsuario,
+        Estado="Habilitado"
+    )
     crudCandidato.create_candidate(db, candidate=candidate)
     candidates = crudCandidato.get_candidates_user(db)
-    for candidate in candidates:
-        print(candidate)
-    return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request , "Candidates": candidates})
-
+    return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request, "Candidates": candidates})
 
 
 @app.get("/candidates/list/", response_class=HTMLResponse, name="listar_candidatos")
@@ -326,46 +321,24 @@ async def listar_candidatos(request: Request, db: Session = Depends(get_db)):
     candidates = crudCandidato.get_candidates_user(db)
     return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request, "Candidates": candidates})
 
-
-""""@app.get("/candidates/list/votant", response_class=HTMLResponse, name="listar_candidatos")
+@app.get("/candidates/list/votant", response_class=HTMLResponse, name="listar_candidatos")
 async def listar_candidatos_votante(request: Request, db: Session = Depends(get_db)):
     candidates = crudCandidato.get_candidates_user(db)
-    return templates.TemplateResponse("listaCandidatoVotante.html.jinja", {"request": request, "Candidates": candidates})"""
-
+    return templates.TemplateResponse("listaCandidatoVotante.html.jinja", {"request": request, "Candidates": candidates})
 
 @app.post("/candidate/delete/{candidate_id}/", response_class=HTMLResponse)
 async def eliminar_candidato(request: Request, candidate_id: int, db: Session = Depends(get_db)):
     crudCandidato.delete_candidate(db=db, candidate_id=candidate_id)
     return RedirectResponse(url='/candidates/list/', status_code=303)
 
-
 @app.get("/candidate/create/", response_class=HTMLResponse)
 async def crear_candidato_template(request: Request, db: Session = Depends(get_db)):
-    users = crudUsuario.get_users(db) 
+    users = crudUsuario.get_users(db)
     fronts = crudFrente.get_fronts(db)
     elections = crudEleccion.get_elections(db)
-    return templates.TemplateResponse("crearCandidato.html.jinja", {"request": request, "Users": users, "Elections": elections, "Fronts":fronts})
-
+    return templates.TemplateResponse("crearCandidato.html.jinja", {"request": request, "Users": users, "Elections": elections, "Fronts": fronts})
 
 #Voto
-@app.post("/vote/create/", response_model=schemas.VoteBase)
-async def crear_voto_post(request: Request, 
-                        IdEleccion: int = Form(...), 
-                        IdCandidato: int = Form(...), 
-                        IdVotante: int = Form(...), 
-                        Hora: str = Form(...), 
-                        db: Session = Depends(get_db)):
-
-    print("Vote: ", IdEleccion)
-    vote = schemas.VoteCreate(
-                              IdEleccion=IdEleccion,          
-                              IdCandidato=IdCandidato,
-                              IdVotante=IdVotante,
-                              Hora=Hora
-                              )
-    crudVoto.create_vote(db, vote=vote)
-    return templates.TemplateResponse("home.html.jinja", {"request": request}) 
-
 
 
 @app.get("/vote/create/{candidate_id}/{election_id}", response_class=HTMLResponse)
@@ -378,4 +351,46 @@ async def voto_seleccionado_template(request: Request, vote_id= int, db: Session
 
 
 
+from fastapi import HTTPException, status
 
+@app.post("/vote/create/", response_model=schemas.VoteBase)
+async def crear_voto_post(
+    request: Request, 
+    IdEleccion: int = Form(...), 
+    IdCandidato: int = Form(...), 
+    IdVotante: int = Form(...), 
+    Hora: str = Form(...), 
+    db: Session = Depends(get_db)
+):
+    # Validar que la elección existe
+    eleccion = crudVoto.get_election_by_id(db, IdEleccion)
+    if not eleccion:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="La elección no existe")
+    
+    # Validar que el candidato existe
+    candidato = crudVoto.get_candidate_by_id(db, IdCandidato)
+    if not candidato:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El candidato no existe")
+    
+    # Validar que el votante no haya votado previamente en esta elección
+    existing_vote = crudVoto.get_vote_by_voter_and_election(db, IdVotante, IdEleccion)
+    if existing_vote:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El votante ya ha votado en esta elección")
+    
+    # Crear el voto
+    vote = schemas.VoteCreate(
+        IdEleccion=IdEleccion,          
+        IdCandidato=IdCandidato,
+        IdVotante=IdVotante,
+        Hora=Hora
+    )
+    created_vote = crudVoto.create_vote(db, vote=vote)
+    return created_vote
+
+#Resultado
+
+
+@app.get("/votos/resultado/")
+async def obtener_resultado_votos(request: Request, db: Session = Depends(get_db)):
+    resultados = crudVoto.sumar_votos(db)
+    return templates.TemplateResponse("resultadoVotos.html.jinja", {"request": request, "resultados": resultados})

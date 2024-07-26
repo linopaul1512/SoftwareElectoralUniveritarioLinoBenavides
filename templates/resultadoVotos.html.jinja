@@ -1,0 +1,19 @@
+{% extends "baseVotante.html.jinja" %}
+
+{% block content %}
+<h1>Resultado de Votos</h1>
+<table>
+    <tr>
+        <th>Elección</th>
+        <th>Candidato</th>
+        <th>Total de Votos</th>
+    </tr>
+    {% for resultado in resultados %}
+    <tr>
+        <td>{{ resultado.eleccion_nombre }}</td>
+        <td>{{ resultado.candidato_nombre }}</td>
+        <td>{{ resultado.total_votos }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

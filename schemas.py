@@ -60,9 +60,10 @@ class Front(FrontBase):
     class Config:
         orm_mode = True
 
+
 class CandidateBase(BaseModel):
     IdFrente: int
-    Id_Eleccion: int
+    IdEleccion: int
     IdUsuario: int
     Estado: str
 
@@ -76,6 +77,7 @@ class Candidate(CandidateBase):
     class Config:
         orm_mode = True
 
+        
 class ElectionBase(BaseModel):
     Fecha: date
     Nombre: str

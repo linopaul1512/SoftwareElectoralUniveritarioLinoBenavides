@@ -5,13 +5,12 @@ from sqlalchemy.orm import Session
 import schemas
 from schemas import Respuesta, Token
 
-
 def create_candidate(db: Session, candidate: schemas.CandidateCreate):
     db_candidate = models.Candidato(
-        IdFrente= candidate.IdFrente,
-        IdEleccion= candidate.Id_Eleccion,
-        IdUsuario= candidate.IdUsuario,
-        Estado= candidate.Estado
+        IdFrente=candidate.IdFrente,
+        IdEleccion=candidate.IdEleccion,
+        IdUsuario=candidate.IdUsuario,
+        Estado=candidate.Estado
     )
     db.add(db_candidate)
     db.commit()
@@ -23,7 +22,6 @@ def get_candidate_by_id(db: Session, candidate_id: int):
 
 def get_candidates_user(db: Session):
     return db.query(models.Candidato, models.Usuario).join(models.Candidato, models.Usuario.CI == models.Candidato.IdUsuario).all()
-
 
 def delete_candidate(db: Session, candidate_id: int):
     db_candidate = get_candidate_by_id(db, candidate_id)
