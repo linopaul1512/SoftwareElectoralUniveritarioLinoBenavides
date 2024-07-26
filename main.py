@@ -359,7 +359,6 @@ async def crear_voto_post(
     IdEleccion: int = Form(...), 
     IdCandidato: int = Form(...), 
     IdVotante: int = Form(...), 
-    Hora: str = Form(...), 
     db: Session = Depends(get_db)
 ):
     # Validar que la elección existe
@@ -377,19 +376,20 @@ async def crear_voto_post(
     if existing_vote:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El votante ya ha votado en esta elección")
     
+
+    hora_actual= datetime.now().time()
+
     # Crear el voto
     vote = schemas.VoteCreate(
         IdEleccion=IdEleccion,          
         IdCandidato=IdCandidato,
         IdVotante=IdVotante,
-        Hora=Hora
+        Hora= hora_actual
     )
     created_vote = crudVoto.create_vote(db, vote=vote)
     return created_vote
 
 #Resultado
-
-
 @app.get("/votos/resultado/")
 async def obtener_resultado_votos(request: Request, db: Session = Depends(get_db)):
     resultados = crudVoto.sumar_votos(db)
