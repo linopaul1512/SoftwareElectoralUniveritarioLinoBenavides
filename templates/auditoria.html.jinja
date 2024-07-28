@@ -1,0 +1,49 @@
+{% extends "baseAdministrador.html.jinja" %}
+
+{% block content %}
+    <h2>Auditoria</h2>
+    <form action="{{ url_for('auditoria_resultado') }}" method="post">
+        <label for="Estado_vzla">Estado:</label>
+        <select id="Estado_vzla" name="Estado_vzla" required>
+            <option value="Extranjero">Extranjero</option>
+            <option value="Anzoategui">Anzoategui</option>
+            <option value="Amazonas">Amazonas</option>
+            <option value="Aragua">Aragua</option>
+            <option value="Bolivar">Bolivar</option>
+            <option value="Barinas">Barinas</option>
+            <option value="Capital">Distrito Capital</option>
+            <option value="Carabobo">Carabobo</option>
+            <option value="Miranda">Miranda</option>
+            <option value="Yaracuy">Yaracuy</option>
+            <option value="Lara">Lara</option>
+            <option value="Falcon">Falcon</option>
+            <option value="Trujillo">Trujillo</option>
+            <option value="Merida">Merida</option>
+            <option value="Tachira">Táchira</option>
+            <option value="Apure">Apure</option>
+            <option value="Portuguesa">Portuguesa</option>
+            <option value="Cojedes">Cojedes</option>
+            <option value="Guarico">Guarico</option>
+            <option value="Monagas">Monagas</option>
+            <option value="Sucre">Sucre</option>
+            <option value="Nueva_Esparta">Nueva Esparta</option>
+            <option value="Delta_Amacuro">Delta Amacuro</option>
+            <option value="Zulia">Zulia</option>
+        </select>
+        <button type="submit">Buscar</button>
+    </form>
+
+    {% if votantes %}
+        <h4>Resultados para {{ estado_seleccionado }}:</h4>
+        <ul>
+            {% for votante in votantes %}
+                <li>{{ votante.Nombres }} {{ votante.Apellidos }} - {{ votante.CI }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    
+    <td>
+        <button value="Imprimir" onclick="window.location.href='/auditoria/resultado/pdf/{estado}' ;" >Descargar Reporte</button>
+    </td>
+{% endblock %}

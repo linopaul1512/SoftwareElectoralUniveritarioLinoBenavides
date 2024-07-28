@@ -8,12 +8,10 @@ from sqlalchemy import Double
 from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-#from excepciones import Exception_No_Apto_Para_Artesano, Exception_No_Apto_Para_Cliente
-#from excepcionesUsuario import LoginExpired, Requires_el_Login_de_Exception
 import schemas
 import  models, seguridad.auth as auth, crudUsuario, crudFrente, crudCandidato, crudEleccion, crudVoto
 import seguridad.auth
-from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, HTMLResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_400_BAD_REQUEST
 from typing import Annotated, Optional, Union
 import shutil
@@ -23,7 +21,11 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import date, datetime, time, timedelta, timezone
 from sqlApp.database import SessionLocal, engine
-
+import pdfkit
+from fastapi.responses import StreamingResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 # Crear todas las tablas en la base de datos
 models.Base.metadata.create_all(bind=engine)
@@ -176,7 +178,7 @@ async def iniciar_sesion_post(request: Request,
     print("Rol antess del ciclo", user.IdRole)
     if user.IdRole == 1:
         return RedirectResponse(url="/base/administrador/", status_code=status.HTTP_303_SEE_OTHER)
-    elif user.IdRole == 2 or user.IdRole == 3 or user.IdRole == 4 or user.IdRole == 5:
+    elif user.IdRole == 2:
         return RedirectResponse(url="/base/votante/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
@@ -275,7 +277,7 @@ async def crear_eleccion_post(request: Request,
     elections = crudEleccion.get_elections(db)
     return templates.TemplateResponse("listaEleccionAdministrador.html.jinja", {"request": request, "Elections": elections})
 
-@app.get("/elections/list/", response_class=HTMLResponse, name="listar_elecciones")
+@app.get("/election/list/", response_class=HTMLResponse, name="listar_elecciones")
 async def listar_elecciones(request: Request, db: Session = Depends(get_db)):
     elections = crudEleccion.get_elections(db)
     return templates.TemplateResponse("listaEleccionAdministrador.html.jinja", {"request": request, "Elections": elections})
@@ -304,7 +306,6 @@ async def crear_candidato_post(
     IdUsuario: int = Form(...),
     db: Session = Depends(get_db)
 ):
-   
     candidate = schemas.CandidateCreate(
         IdFrente=IdFrente,
         IdEleccion=IdEleccion,
@@ -315,16 +316,10 @@ async def crear_candidato_post(
     candidates = crudCandidato.get_candidates_user(db)
     return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request, "Candidates": candidates})
 
-
 @app.get("/candidates/list/", response_class=HTMLResponse, name="listar_candidatos")
 async def listar_candidatos(request: Request, db: Session = Depends(get_db)):
     candidates = crudCandidato.get_candidates_user(db)
     return templates.TemplateResponse("listaCandidatoAdministrador.html.jinja", {"request": request, "Candidates": candidates})
-
-@app.get("/candidates/list/votant", response_class=HTMLResponse, name="listar_candidatos")
-async def listar_candidatos_votante(request: Request, db: Session = Depends(get_db)):
-    candidates = crudCandidato.get_candidates_user(db)
-    return templates.TemplateResponse("tarjetonelectoral.html.jinja", {"request": request, "Candidates": candidates})
 
 @app.post("/candidate/delete/{candidate_id}/", response_class=HTMLResponse)
 async def eliminar_candidato(request: Request, candidate_id: int, db: Session = Depends(get_db)):
@@ -337,29 +332,38 @@ async def crear_candidato_template(request: Request, db: Session = Depends(get_d
     fronts = crudFrente.get_fronts(db)
     elections = crudEleccion.get_elections(db)
     return templates.TemplateResponse("crearCandidato.html.jinja", {"request": request, "Users": users, "Elections": elections, "Fronts": fronts})
+                                      
 
 #Voto
 
+#tarjeton electoral del votante
+@app.get("/candidate/list/votant", response_class=HTMLResponse, name="listar_candidatos_votante")
+async def listar_candidatos_votante(request: Request, db: Session = Depends(get_db)):
+    candidates_elections = crudCandidato.get_candidates_votant(db)
+    return templates.TemplateResponse("tarjetonelectoral.html.jinja", {"request": request, "CandidatesElections": candidates_elections})
 
+#Plantilla donde aparece la opcion seleccionada en el tarjeton
 @app.get("/vote/create/{candidate_id}/{election_id}", response_class=HTMLResponse)
-async def voto_seleccionado_template(request: Request, vote_id= int, db: Session = Depends(get_db)):
-    vote  = crudVoto.get_vote_by_id(db, vote_id)
+async def voto_seleccionado_template(request: Request, candidate_id: int, election_id: int, db: Session = Depends(get_db)):
     user = crudUsuario.get_users(db) 
-    candidate = crudCandidato.get_candidates(db)
-    election = crudEleccion.get_elections(db)
-    return templates.TemplateResponse("voto.html.jinja", {"request": request, "Vote": vote, "User": user, "Election": election, "Candidate":candidate})
+    candidate = crudCandidato.get_candidate_by_id(db, candidate_id)
+    election = crudEleccion.get_election_by_id(db, election_id)
+    return templates.TemplateResponse("voto.html.jinja", {"request": request, "Candidate": candidate, "User": user, "Election": election})
 
 
-
-
+#Crear el voto en la tabla votos
 @app.post("/vote/create/", response_model=schemas.VoteBase)
 async def crear_voto_post(
     request: Request, 
     IdEleccion: int = Form(...), 
     IdCandidato: int = Form(...), 
-    IdVotante: int = Form(...), 
     db: Session = Depends(get_db)
 ):
+    #Buscar el usuario logeado
+    votante = request.session.get('CI')
+    if not votante:
+        raise HTTPException(status_code=401, detail="Unauthorized. Please log in as an votant.")
+    
     # Validar que la elección existe
     eleccion = crudVoto.get_election_by_id(db, IdEleccion)
     if not eleccion:
@@ -371,7 +375,7 @@ async def crear_voto_post(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El candidato no existe")
     
     # Validar que el votante no haya votado previamente en esta elección
-    existing_vote = crudVoto.get_vote_by_voter_and_election(db, IdVotante, IdEleccion)
+    existing_vote = crudVoto.get_vote_by_voter_and_election(db, votante, IdEleccion)
     if existing_vote:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El votante ya ha votado en esta elección")
     
@@ -382,14 +386,50 @@ async def crear_voto_post(
     vote = schemas.VoteCreate(
         IdEleccion=IdEleccion,          
         IdCandidato=IdCandidato,
-        IdVotante=IdVotante,
+        IdVotante= votante,
         Hora= hora_actual
     )
-    created_vote = crudVoto.create_vote(db, vote=vote)
-    return created_vote
+    crudVoto.create_vote(db, vote=vote)
+    return templates.TemplateResponse("baseVotante.html.jinja", {"request": request})
 
 #Resultado
 @app.get("/votos/resultado/")
 async def obtener_resultado_votos(request: Request, db: Session = Depends(get_db)):
-    resultados = crudVoto.sumar_votos(db)
-    return templates.TemplateResponse("resultadoVotos.html.jinja", {"request": request, "resultados": resultados})
+    resultados, total_votes = crudVoto.sumar_votos(db)
+    return templates.TemplateResponse(
+        "resultadoVotos.html.jinja", 
+        {"request": request, "resultados": resultados, "total_votes": total_votes}
+    )
+
+#Auditoria
+
+@app.get("/auditoria/", name="auditoria")
+async def auditoria(request: Request):
+    return templates.TemplateResponse("auditoria.html.jinja", {"request": request})
+
+@app.post("/auditoria/resultado/", name="auditoria_resultado")
+async def obtener_votantes_por_estado(request: Request, Estado_vzla: str = Form(...), db: Session = Depends(get_db)):
+    votantes = db.query(models.Usuario).filter(models.Usuario.Estado_vzla == Estado_vzla).all()
+    return templates.TemplateResponse("auditoria.html.jinja", {"request": request, "votantes": votantes, "estado_seleccionado": Estado_vzla})
+
+@app.get("/auditoria/resultado/pdf/{estado}", name="auditoria_resultado_pdf")
+async def generar_pdf_auditoria(estado: str, db: Session = Depends(get_db)):
+    votantes = db.query(models.Usuario).filter(models.Usuario.Estado_vzla == estado).all()
+
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    c.drawString(100, height - 100, f"Reporte de Votantes en {estado}")
+    y = height - 120
+
+    for votante in votantes:
+        c.drawString(100, y, f"{votante.Nombres} {votante.Apellidos} - {votante.CI}")
+        y -= 20
+        if y < 50:
+            c.showPage()
+            y = height - 50
+
+    c.save()
+    buffer.seek(0)
+    return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=reporte_auditoria_{estado}.pdf"})

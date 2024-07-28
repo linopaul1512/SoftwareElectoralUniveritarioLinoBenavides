@@ -6,13 +6,23 @@
     <tr>
         <th>Elección</th>
         <th>Candidato</th>
+        <th>Imagen</th>
+        <th>Votos</th>
+        <th>Porcentaje</th>
         <th>Total de Votos</th>
+        <th>Hab registrados</th>
+        <th>Participación</th>
     </tr>
     {% for resultado in resultados %}
     <tr>
         <td>{{ resultado.eleccion_nombre }}</td>
         <td>{{ resultado.candidato_nombre }}</td>
+        <td><img src="/{{ resultado.candidato_imagen }}" alt="{{ resultado.candidato_nombre }}" width="100"></td>
         <td>{{ resultado.total_votos }}</td>
+        <td>{{ (resultado.total_votos / total_votes * 100) | round(2) }}%</td>
+        <td>{{ total_votes }}</td>
+        <td>{{ resultado.pob_hab }}</td>
+        <td>{{ resultado.participation_rate | round(2) }}%</td>
     </tr>
     {% endfor %}
 </table>

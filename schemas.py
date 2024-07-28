@@ -98,7 +98,6 @@ class Election(ElectionBase):
 
 
 class VoteBase(BaseModel):
-    IdVoto: int
     IdEleccion: int
     IdCandidato: int
     IdVotante: int

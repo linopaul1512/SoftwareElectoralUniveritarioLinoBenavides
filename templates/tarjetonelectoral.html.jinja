@@ -6,19 +6,16 @@
 <table id="formcenter">
     <tr>
         <th>Nombre</th>
-        <th>Tarjeta</th>
+        <th>Imagen</th>
     </tr>
 
-    {% for canidate in Candidates %}
+    {% for candidate, user, election in CandidatesElections %}
     <tr>
-        <td>{{ Candidates.Nombre }}</td>
-        <td onclick="window.location.href='/vote/create/{{ canidate.IdCandidato }}/{{ election.IdEleccion }}';"><img src="/{{ canidate.Imagen }}" alt="{{ canidate.Nombre }}" width="100"></td>
+        <td>{{ user.Nombres }} {{ user.Apellidos }}</td>
+        <td onclick="window.location.href='/vote/create/{{ candidate.IdCandidato }}/{{ election.Id_Eleccion }}';">
+            <img src="/{{ user.Imagen }}" alt="{{ user.Nombres }}" width="100">
+        </td>
     </tr>
     {% endfor %}
-
-
-
-
-    
 </table>
 {% endblock %}

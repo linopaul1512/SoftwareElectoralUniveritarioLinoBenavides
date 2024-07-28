@@ -1,34 +1,31 @@
-{% extends 'baseAdministrador.html.jinja' %}
-
+{% extends "baseAdministrador.html.jinja" %}
 {% block content %}
-<h1>{% block title %} Candidatos {% endblock %}</h1>
-
-<table id="formcenter">
-    <tr>
-        <th>Nombre</th>
-        <th>Tarjeta</th>
-    </tr>
-
-    {% for front in Fronts %}
-    <tr>
-        <td>{{ front.Nombre }}</td>
-        <td><img src="/{{front.Imagen}}" alt="{{ front.Nombre }}" width="100"></td>
-
-        <td>
-            <form action="/front/delete/{{ front.IdFrente }}" method="post" style="display:inline;">
-                <button type="submit">Eliminar</button>
-            </form>
-         </td>
-
-        
-    </tr>
-    {% endfor %}
-
-    <td>
+<h1>Lista de Candidatos</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Imagen</th>
+            <th>Frente</th>
+            <th>Elección</th>
+            <th>Funciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for candidate, user, election, front in Candidates %}
+        <tr>
+            <td>{{ user.Nombres }} {{ user.Apellidos }}</td>
+            <td><img src="/{{ user.Imagen }}" alt="{{ user.Nombres }} {{ user.Apellidos }}" width="100"></td>
+            <td>{{ front.Nombre }}</td>
+            <td>{{ election.Nombre }}</td>
+            <td>
+                <button value="eliminar_candidato" onclick="window.location.href='/candidate/delete/{{ candidate.IdCandidato }}';">Eliminar</button>
+            </td>
+        </tr>
+        {% endfor %}
+            <td>
         <button value="" onclick="window.location.href='/candidate/create/' ;" >Crear Candidato</button>
     </td>
-
-
-    
+    </tbody>
 </table>
 {% endblock %}
